@@ -1,0 +1,15 @@
+venv/
+.venv/
+frontend/node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.env
+!.env.example
+uploads/*
+!uploads/.gitkeep
+
+!README.md
+.sh
+.tex

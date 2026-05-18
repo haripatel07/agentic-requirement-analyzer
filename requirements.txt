@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+langgraph
+langchain
+langchain-groq
+python-docx
+pypdf
+sentence-transformers
+faiss-cpu
+python-dotenv
+requests
+pytest
+python-multipart
