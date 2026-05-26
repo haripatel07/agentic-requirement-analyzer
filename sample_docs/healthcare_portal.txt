@@ -1,0 +1,53 @@
+Healthcare Patient Portal Requirements
+
+This document outlines requirements for PatientHub, a web-based portal that allows
+patients to access their medical records, schedule appointments, and communicate with
+healthcare providers.
+
+Core Features:
+
+1. User Authentication & Profiles
+   - Patients must register with email, phone number, and date of birth
+   - Two-factor authentication should be available for security
+   - Passwords must be strong and comply with security standards
+   - Profile data must be easily updateable
+
+2. Medical Records Access
+   - Patients should be able to view their medical history
+   - Lab results and imaging reports must be accessible
+   - The system should securely display prescription information
+   - Data should load quickly to minimize user frustration
+   - Old records (more than 10 years) may be archived
+
+3. Appointment Management
+   - Patients can schedule appointments with available doctors
+   - The system should send reminders before appointments
+   - Cancellation and rescheduling must be straightforward
+   - Doctor availability should be updated in real-time
+
+4. Provider Communication
+   - Patients should be able to message their providers
+   - Messages should be responded to in a timely manner
+   - Attachments (documents, images) should be supported
+   - Message history must be preserved
+
+5. Performance & Reliability
+   - System uptime should be high and consistent
+   - Page load times should be acceptable
+   - The system must be scalable for future growth
+   - Backup procedures should be implemented regularly
+
+6. Compliance & Security
+   - HIPAA compliance is mandatory
+   - Data encryption must be used for sensitive information
+   - Access controls must be role-based (patient, doctor, admin)
+   - Audit logs should track all data access
+
+7. Mobile Compatibility
+   - The portal must work on mobile devices
+   - The user interface should be intuitive
+   - Mobile and desktop experiences should be consistent
+
+Ambiguous requirements marked above intentionally include "should be high",
+"acceptable" performance terms, "intuitive" UX, and "as needed" concepts
+that require clarification.
