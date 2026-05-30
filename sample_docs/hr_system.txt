@@ -1,0 +1,56 @@
+Internal HR Management System Requirements
+
+This document describes requirements for HRFlow, an internal tool to streamline HR
+operations for mid-size companies (200-500 employees). The system will handle
+employee records, leave management, payroll integration, and performance reviews.
+
+Employee Records Management:
+- HR staff and managers should be able to manage employee profiles
+- Employee data includes personal info, contact details, employment history
+- Changes to employee records should be audited
+- Sensitive data access must be restricted by role
+- Export capabilities for reporting should be straightforward
+
+Leave Management:
+- Employees should submit leave requests through the portal
+- Managers need to approve or reject requests
+- The system must prevent overbooking of leave
+- Leave balance should be automatically calculated
+- Carry-over policies should be flexible and configurable
+
+Payroll Integration:
+- The system should integrate with the external payroll provider
+- Attendance data must be synced reliably
+- Deductions and allowances should be manageable
+- Payroll reports must be generated quickly
+- The system should handle different employment types (full-time, contract, part-time)
+
+Performance Reviews:
+- Annual reviews should be scheduled automatically
+- Managers and reviewers should provide feedback through the system
+- The performance review process should be transparent
+- Historical review data must be preserved
+- Review cycles should be customizable
+
+Security & Access:
+- User roles must control feature access (HR admin, manager, employee)
+- Passwords should follow best practices
+- Sensitive data should be encrypted
+- System should support SSO integration with corporate directory
+
+Reporting & Analytics:
+- HR should generate headcount reports easily
+- Turnover analytics should be available
+- Leave utilization reports must be accurate
+- The system should provide insights for HR planning
+- Custom report generation would be nice to have
+
+Performance Expectations:
+- The system should be responsive and user-friendly
+- Bulk operations like importing employee lists should be fast
+- The system should handle concurrent users without issues
+- System downtime should be minimal
+
+This document intentionally includes vague terms like "should be responsive",
+"easily", "fast", "minimal downtime", "user-friendly", and "as needed"
+to test the Risk & Ambiguity detection agent.
