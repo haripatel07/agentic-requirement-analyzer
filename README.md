@@ -303,5 +303,4 @@ agentic-requirement-analyzer/
 ---
 
 ## License
-
-This is a 4-week internship project. See `context.md` for architecture reference and week-by-week plan.
+MIT
