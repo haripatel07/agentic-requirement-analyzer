@@ -10,3 +10,8 @@ Build (needs a LaTeX engine, e.g. tectonic):
     tectonic -X compile pages_a.tex   # likewise b, c, d, e
 
 `metrics.tex` holds the Table 5.1 values measured with `openai/gpt-oss-120b` on Groq.
+
+## Full-body build
+
+`build_full.py` assembles `report_full.tex` (natural spacing, regenerated TOC/List of Figures).
+The submitted PDF uses its original pages 1-6 and 10-11 plus pages 1-3 and 6-18 of this build.
