@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "18.x",
@@ -15,8 +17,12 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.6.2",
     "jsdom": "^26.1.0",
-    "vitest": "^3.2.4",
-    "vite": "^7.0.4"
+    "postcss": "^8.5.33",
+    "tailwindcss": "^3.4.19",
+    "vite": "^7.0.4",
+    "vitest": "^3.2.4"
   }
 }

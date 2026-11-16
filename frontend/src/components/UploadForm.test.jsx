@@ -11,6 +11,8 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
+const ok = (body) => ({ ok: true, json: async () => body })
+
 describe('UploadForm', () => {
   test('shows a message when no file is selected', async () => {
     render(<UploadForm />)
@@ -20,38 +22,41 @@ describe('UploadForm', () => {
     expect(await screen.findByText('No file selected')).toBeInTheDocument()
   })
 
-  test('uploads a file, analyzes it, and shows the report', async () => {
+  test('uploads, analyzes and reports the result to the parent', async () => {
+    const onComplete = vi.fn()
     fetch
-      .mockResolvedValueOnce({
-        json: async () => ({ filename: 'uploads/sample.txt', status: 'uploaded' }),
-      })
-      .mockResolvedValueOnce({
-        json: async () => ({
-          run_id: 1,
-          report: {
-            executive_summary: 'Summary text',
-            functional_requirements: ['Login'],
-            non_functional_requirements: ['Fast response'],
-            user_stories: [{ feature: 'Login', story: 'As a user, I want to log in', priority: 'High' }],
-            acceptance_criteria: [{ story_ref: 'As a user, I want to log in', given: 'Given valid creds', when: 'When submitted', then: 'Then user is logged in' }],
-            ambiguities: [{ requirement: 'Fast response', reason: 'vague', suggestion: 'Specify a response time' }],
-            suggestions: ['Specify a response time'],
-            errors: [],
-          },
-        }),
-      })
+      .mockResolvedValueOnce(ok({ filename: 'uploads/sample.txt', status: 'uploaded' }))
+      .mockResolvedValueOnce(ok({ run_id: 1, report: { executive_summary: 'Summary text' } }))
 
-    const { container } = render(<UploadForm />)
-    const fileInput = container.querySelector('input[type="file"]')
-    const file = new File(['hello world'], 'sample.txt', { type: 'text/plain' })
-
-    fireEvent.change(fileInput, { target: { files: [file] } })
+    const { container } = render(<UploadForm onComplete={onComplete} />)
+    const input = container.querySelector('input[type="file"]')
+    fireEvent.change(input, { target: { files: [new File(['hello'], 'sample.txt', { type: 'text/plain' })] } })
     fireEvent.click(screen.getByRole('button', { name: /upload & analyze/i }))
 
     await waitFor(() => expect(screen.getByText('Analysis complete')).toBeInTheDocument())
-    expect(screen.getByText('Summary text')).toBeInTheDocument()
-    expect(screen.getByText('Login')).toBeInTheDocument()
-    expect(screen.getByText('Fast response')).toBeInTheDocument()
+    expect(onComplete).toHaveBeenCalledWith({ run_id: 1, report: { executive_summary: 'Summary text' } })
     expect(fetch).toHaveBeenCalledTimes(2)
+  })
+
+  test('shows the server error when analysis fails', async () => {
+    fetch
+      .mockResolvedValueOnce(ok({ filename: 'uploads/a.txt' }))
+      .mockResolvedValueOnce({ ok: false, status: 500, json: async () => ({ detail: 'boom' }) })
+
+    const { container } = render(<UploadForm />)
+    fireEvent.change(container.querySelector('input[type="file"]'), {
+      target: { files: [new File(['x'], 'a.txt')] },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /upload & analyze/i }))
+
+    expect(await screen.findByText('Error: boom')).toBeInTheDocument()
+  })
+
+  test('rejects unsupported file types', () => {
+    const { container } = render(<UploadForm />)
+    fireEvent.change(container.querySelector('input[type="file"]'), {
+      target: { files: [new File(['x'], 'a.exe')] },
+    })
+    expect(screen.getByText(/Unsupported file type/)).toBeInTheDocument()
   })
 })
