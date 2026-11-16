@@ -29,3 +29,21 @@ def test_run_pipeline_full_adds_story_acceptance_risk_and_report(monkeypatch, tm
     assert result["state"]["user_stories"][0]["story"] == "As a user, I want to register"
     assert result["report"]["executive_summary"] == "Summary"
     assert result["report"]["suggestions"] == ["Specify security controls"]
+
+
+def test_graph_is_a_real_langgraph_stategraph():
+    from langgraph.graph.state import CompiledStateGraph
+
+    assert isinstance(graph.get_graph(full=True), CompiledStateGraph)
+    nodes = set(graph.get_graph(full=True).get_graph().nodes)
+    assert {"parse", "analyze", "classify", "stories", "acceptance", "risk"} <= nodes
+
+
+def test_errors_from_every_agent_are_accumulated(monkeypatch, tmp_path):
+    monkeypatch.setattr("backend.agents.parser.parse_document", lambda s: {"raw_text": "t", "errors": ["e1"]})
+    monkeypatch.setattr("backend.agents.analyzer.analyze_requirements", lambda s: {"errors": ["e2"]})
+    monkeypatch.setattr("backend.agents.classifier.classify_requirements", lambda s: {"errors": ["e3"]})
+
+    result = graph.run_pipeline_partial(str(tmp_path / "d.txt"))
+
+    assert result["errors"] == ["e1", "e2", "e3"]

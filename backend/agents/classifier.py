@@ -29,15 +29,16 @@ Features/Constraints:
 def _call_groq(prompt_text: str) -> str:
     try:
         from langchain_groq import ChatGroq
-        client = ChatGroq(api_key=os.getenv("GROQ_API_KEY"))
-        resp = client.chat([{"role": "user", "content": prompt_text}], model="llama-3.3-70b-versatile")
-        if isinstance(resp, str):
-            return resp
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            raise RuntimeError("GROQ_API_KEY is not set. Add it to .env and restart backend.")
+        client = ChatGroq(
+            model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
+            api_key=api_key,
+        )
+        resp = client.invoke(prompt_text)
         if hasattr(resp, "content"):
             return resp.content
-        if isinstance(resp, (list, tuple)) and len(resp) > 0:
-            first = resp[0]
-            return getattr(first, "content", str(first))
         return str(resp)
     except Exception:
         raise

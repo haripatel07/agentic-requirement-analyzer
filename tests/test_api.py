@@ -31,8 +31,49 @@ def test_upload_endpoint_saves_file(tmp_path, monkeypatch):
     assert saved_path.read_text(encoding="utf-8") == "hello world"
 
 
+def test_upload_rejects_unsupported_extension(tmp_path, monkeypatch):
+    client = TestClient(app)
+    monkeypatch.setattr("backend.main.UPLOAD_DIR", tmp_path)
+
+    response = client.post("/upload", files={"file": ("evil.exe", b"x", "application/octet-stream")})
+
+    assert response.status_code == 400
+
+
+def test_upload_ignores_client_supplied_path(tmp_path, monkeypatch):
+    client = TestClient(app)
+    monkeypatch.setattr("backend.main.UPLOAD_DIR", tmp_path)
+
+    response = client.post("/upload", files={"file": ("../../escape.txt", b"x", "text/plain")})
+
+    assert response.status_code == 200
+    assert Path(response.json()["filename"]).parent == tmp_path
+
+
+def test_upload_rejects_oversized_file(tmp_path, monkeypatch):
+    client = TestClient(app)
+    monkeypatch.setattr("backend.main.UPLOAD_DIR", tmp_path)
+    monkeypatch.setattr("backend.main.MAX_UPLOAD_BYTES", 10)
+
+    response = client.post("/upload", files={"file": ("big.txt", b"x" * 100, "text/plain")})
+
+    assert response.status_code == 413
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_analyze_rejects_paths_outside_upload_dir(tmp_path, monkeypatch):
+    client = TestClient(app)
+    monkeypatch.setattr("backend.main.UPLOAD_DIR", tmp_path / "uploads")
+    (tmp_path / "uploads").mkdir()
+
+    response = client.post("/analyze", json={"filename": "/etc/passwd"})
+
+    assert response.status_code == 400
+
+
 def test_analyze_endpoint_uses_pipeline_and_db(tmp_path, monkeypatch):
     client = TestClient(app)
+    monkeypatch.setattr("backend.main.UPLOAD_DIR", tmp_path)
 
     fake_report = {"executive_summary": "ok", "functional_requirements": []}
     monkeypatch.setattr("backend.main.db.init_db", lambda *args, **kwargs: None)

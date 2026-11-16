@@ -9,7 +9,11 @@ __pycache__/
 !.env.example
 uploads/*
 !uploads/.gitkeep
+node_modules/
 
 !README.md
 .sh
 .tex
+frontend/dist/
+runs.db
+.vscode/

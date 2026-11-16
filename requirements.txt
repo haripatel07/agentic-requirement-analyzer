@@ -11,3 +11,5 @@ python-dotenv
 requests
 pytest
 python-multipart
+httpx
+numpy

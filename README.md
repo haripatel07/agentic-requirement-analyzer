@@ -2,7 +2,7 @@
 
 An autonomous multi-agent AI system that analyzes raw software requirements documents and generates structured Agile outputs: functional/non-functional requirements, user stories, acceptance criteria, and ambiguity/risk detection.
 
-**Stack:** Python 3.11 · FastAPI · LangGraph · React 18 · Tailwind CSS · SQLite · Groq API (LLM)
+**Stack:** Python 3.11+ · FastAPI · LangGraph · React 18 · Tailwind CSS · SQLite · Groq API (LLM)
 
 ---
 
@@ -106,14 +106,15 @@ class PipelineState(TypedDict):
 POST /upload
 ```
 - Body: multipart form-data with file
-- Response: `{"filename": "path/to/file", "status": "uploaded"}`
+- Accepts `.txt`, `.pdf`, `.docx` up to 5 MB; the file is stored under a server-generated name
+- Response: `{"filename": "uploads/<uuid>.txt", "status": "uploaded"}`
 
 ### Analyze (Full Pipeline)
 
 ```
 POST /analyze
 ```
-- Body: `{"filename": "<path from /upload>"}`
+- Body: `{"filename": "<path from /upload>"}` (paths outside `uploads/` are rejected with 400)
 - Response: `{"run_id": 1, "report": {...}}`
 
 ### Pipeline History
@@ -160,18 +161,13 @@ Three example requirement documents are included to test the system:
 # Terminal 1: start backend
 uvicorn backend.main:app --reload
 
-# Terminal 2: test each sample
-curl -X POST http://localhost:8000/analyze \
-  -H "Content-Type: application/json" \
-  -d '{"filename":"sample_docs/sample_requirement.txt"}'
-
-curl -X POST http://localhost:8000/analyze \
-  -H "Content-Type: application/json" \
-  -d '{"filename":"sample_docs/healthcare_portal.txt"}'
-
-curl -X POST http://localhost:8000/analyze \
-  -H "Content-Type: application/json" \
-  -d '{"filename":"sample_docs/hr_system.txt"}'
+# Terminal 2: upload a sample, then analyze the returned path
+for doc in sample_requirement healthcare_portal hr_system; do
+  path=$(curl -s -F "file=@sample_docs/$doc.txt" http://localhost:8000/upload | python -c "import sys,json;print(json.load(sys.stdin)['filename'])")
+  curl -s -X POST http://localhost:8000/analyze \
+    -H "Content-Type: application/json" \
+    -d "{\"filename\":\"$path\"}"
+done
 ```
 
 ---
@@ -209,7 +205,11 @@ The current suite covers:
 - document parsing for `.txt` files
 - SQLite persistence helpers
 - report assembly with a monkeypatched summary generator
-- FastAPI health, upload, and analyze endpoints
+- FastAPI health, upload (type, size and path checks), and analyze endpoints
+- LangGraph `StateGraph` wiring and error accumulation
+- acceptance-criteria label stripping and rule-based risk detection
+
+Frontend tests: `cd frontend && npm test`. Production build: `npm run build`.
 
 ### LLM Fallback
 

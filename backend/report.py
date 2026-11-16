@@ -8,16 +8,17 @@ from typing import Dict
 def _call_groq_for_summary(text: str) -> str:
     try:
         from langchain_groq import ChatGroq
-        client = ChatGroq(api_key=os.getenv("GROQ_API_KEY"))
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            return ""
+        client = ChatGroq(
+            model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
+            api_key=api_key,
+        )
         prompt = f"Summarize the following requirements document in 2-3 sentences:\n\n{text}"
-        resp = client.chat([{"role": "user", "content": prompt}], model="llama-3.3-70b-versatile")
-        if isinstance(resp, str):
-            return resp
+        resp = client.invoke(prompt)
         if hasattr(resp, "content"):
             return resp.content
-        if isinstance(resp, (list, tuple)) and len(resp) > 0:
-            first = resp[0]
-            return getattr(first, "content", str(first))
         return str(resp)
     except Exception:
         return ""
@@ -38,13 +39,18 @@ def assemble_report(state: Dict) -> Dict:
     }
     # Aggregate suggestions from ambiguities/risks
     suggestions = []
+    seen = set()
     for a in report["ambiguities"]:
         s = a.get("suggestion") or ""
-        if s:
+        key = s.strip().lower()
+        if s and key not in seen:
+            seen.add(key)
             suggestions.append(s)
     for r in report["risks"]:
         s = r.get("suggestion") or ""
-        if s:
+        key = s.strip().lower()
+        if s and key not in seen:
+            seen.add(key)
             suggestions.append(s)
     report["suggestions"] = suggestions
     return report
