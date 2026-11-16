@@ -1,0 +1,79 @@
+\documentclass[12pt,a4paper,openany]{report}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{placeins}
+
+\hypersetup{colorlinks=true, linkcolor=black, urlcolor=blue, citecolor=black}
+\onehalfspacing
+\raggedbottom
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\renewcommand{\arraystretch}{1.15}
+\captionsetup{font=bf, labelfont=bf}
+\urlstyle{same}
+
+\definecolor{codegray}{RGB}{246,248,250}
+\definecolor{codeborder}{RGB}{210,215,220}
+\lstdefinestyle{reportcode}{
+  backgroundcolor=\color{codegray},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{codeborder},
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=2
+}
+\lstset{style=reportcode}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{23AIML049}
+\fancyhead[R]{Agentic Requirement Analyzer -- Internship Report}
+\fancyfoot[L]{CSPIT, CHARUSAT}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{Department of AIML}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\setlength{\headheight}{15pt}
+
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\centering\Large}
+  {CHAPTER \thechapter}
+  {0.5em}
+  {\Large}
+\titlespacing*{\chapter}{0pt}{-5pt}{14pt}
+\titleformat{\section}{\normalfont\bfseries\large}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\bfseries}{\thesubsection}{1em}{}
+
+\newcommand{\reporttitle}{AGENTIC REQUIREMENT ANALYZER}
+\newcommand{\subtitle}{Autonomous Multi-Agent AI System for Software Requirement Analysis and User Story Generation}
+\newcommand{\student}{HARI PATEL}
+\newcommand{\rollno}{23AIML049}
+\newcommand{\internalguide}{Prof. Hardik Jaiswal}
+\newcommand{\externalguide}{Mr. Pallav Mamtora}
+\newcommand{\externaltitle}{CEO}
+\newcommand{\company}{Techmicra IT Solutions}
+\newcommand{\hod}{Dr. Nirav Bhatt}
+

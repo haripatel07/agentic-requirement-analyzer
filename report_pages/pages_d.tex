@@ -1,0 +1,69 @@
+\input{_preamble.tex}
+\begin{document}
+\pagestyle{fancy}
+
+% ===== original PDF pages 23-24 (report pages 14-15) =====
+\setcounter{page}{14}
+\setcounter{chapter}{5}\setcounter{section}{0}\setcounter{table}{0}\setcounter{figure}{0}
+\chapter{CONCLUSION AND FUTURE SCOPE}
+
+\section{Conclusion}
+The objectives defined in Section 1.4 were achieved during the internship.
+The modular six-stage analysis pipeline, implemented as a compiled
+LangGraph \texttt{StateGraph}, together with multi-format document parsing,
+actor/feature/constraint extraction, functional and non-functional
+classification, user-story generation, acceptance-criteria generation,
+FAISS-based ambiguity detection, rule-based risk detection, FastAPI
+integration, React report rendering and SQLite persistence were fully
+implemented, tested and demonstrated.
+
+During implementation and review, I faced several technical challenges
+that improved the quality of the project. I identified that the FAISS
+\texttt{IndexFlatIP} vectors were not explicitly normalized, which meant
+the scores could not safely be interpreted as cosine similarity, and that
+the intended similarity threshold was described but not enforced before the
+LLM confirmation step. In the frontend, acceptance-criteria fields already
+contained the words ``Given'', ``When'' and ``Then'', while the renderer
+added the same labels again. I fixed these issues, together with the
+upload-endpoint weaknesses, and covered the fixes with automated tests.
+The 0.40 similarity threshold was chosen empirically on three documents;
+calibration on a labelled dataset remains future work.
+
+Personally, the internship strengthened my ability to design agent
+workflows, engineer prompts with strict JSON contracts, and implement
+retry-once-then-fallback behaviour around unreliable model responses. I
+gained practical experience with LangGraph orchestration, FastAPI endpoint
+design, Sentence-Transformers embeddings, FAISS indexing, React integration
+and persistent execution history. These skills connect directly with my
+AIML coursework in natural language processing, machine learning
+representations, software engineering and intelligent systems, while also
+showing how model reasoning must be combined with validation, testing and
+backend architecture to build a usable AI application.
+
+% ----- original PDF page 24 -----
+\clearpage
+\subsection{Limitations}
+\begin{itemize}[leftmargin=*]
+\item The current application has no authentication or authorization layer,
+  so reports and uploaded documents are not protected by user identity or
+  role-based access control.
+\item The complete analysis pipeline runs synchronously inside the HTTP
+  request, which limits concurrency and can cause long-running requests or
+  timeouts.
+\item SQLite persistence and the frontend are designed for a single-user
+  demonstration and do not provide tenant separation, collaborative review
+  or multi-user report ownership.
+\item Risk detection is rule-based rather than model-based, and the
+  ambiguity threshold has not been validated on a labelled dataset.
+\end{itemize}
+
+\section{Future Scope}
+Beyond the scope of this internship, the system could be extended with Jira
+or Azure DevOps integration to push generated user stories directly into a
+sprint board, UML and database schema generation from the same parsed
+requirements, multi-language requirement support, and an effort-estimation
+agent that assigns story points based on similar past requirements.
+Production hardening should additionally apply secure file-upload controls,
+API-security practices and documented AI risk-management procedures in
+accordance with OWASP and NIST guidance [17,18,19].
+\end{document}

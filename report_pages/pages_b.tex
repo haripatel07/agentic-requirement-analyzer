@@ -1,0 +1,106 @@
+\input{_preamble.tex}
+\newcommand{\pre}{\vspace{43pt}}
+\newcommand{\post}{\vspace{18.4pt}}
+\begin{document}
+\pagestyle{fancy}
+
+% ===== original PDF page 17 (report page 8) =====
+\setcounter{page}{8}
+\setcounter{chapter}{4}\setcounter{section}{3}\setcounter{table}{0}\setcounter{figure}{0}
+\section{Risk and Ambiguity Detection Agent}
+\vspace{13.4pt}
+This agent works differently from the others. A small seed corpus of
+known-vague phrases (for example ``quickly'', ``user-friendly'', ``as
+needed'') is embedded using a Sentence-Transformers model at module load
+time [7] and indexed with FAISS [8]. For every requirement, the agent
+embeds the requirement text and searches the index for the closest
+known-vague phrases. If the similarity is above a threshold of 0.40, the
+requirement and the matched phrase are passed to the LLM together, which
+confirms the issue and proposes a concrete rewording -- for example,
+replacing ``the system should respond quickly'' with a specific
+response-time target. Separately, a rule-based detector classifies each
+requirement into security, compliance, integration, performance or data
+categories, with a severity and a mitigation, and populates the risks list.
+
+\vspace{8.6pt}
+\begin{lstlisting}
+query_vector = normalize(embed(requirement))
+scores, indexes = faiss_index.search(query_vector, k=3)
+for score, index in zip(scores, indexes):
+    if score >= similarity_threshold:
+        matched_seed = seed_corpus[index]
+        ambiguities.append(confirm_with_llm(requirement, matched_seed))
+\end{lstlisting}
+
+\vspace{39.4pt}
+\section{Technical Code Review Findings}
+\vspace{13.4pt}
+A detailed review of the implementation and supplied screenshots
+identified four engineering defects, all of which were fixed before
+submission. First, the ambiguity detector used \texttt{faiss.IndexFlatIP}
+without L2-normalized vectors, so scores were raw inner products; seed and
+query embeddings are now normalized and scores are true cosine
+similarities. Second, every top-$k$ match was forwarded to the LLM; matches
+below the 0.40 threshold are now rejected. Third, the \texttt{risks} list
+was never populated; risk detection is now separate from ambiguity
+detection. Fourth, the acceptance prompt returned values that already
+began with ``Given'', ``When'' and ``Then'', while the React renderer
+prepended the labels again; the prompt now requests label-free values, the
+backend strips any leading label, and the renderer adds each label once.
+
+The upload endpoint was also hardened: only \texttt{.txt}, \texttt{.pdf}
+and \texttt{.docx} files are accepted, files are stored under
+server-generated names, uploads are limited to 5~MB, and \texttt{/analyze}
+accepts only paths inside the upload directory.
+
+% ===== original PDF page 18 (report page 9) =====
+\clearpage
+\setcounter{section}{5}
+\enlargethispage{6pt}
+\section{Report Assembly}
+\post
+The final node in the graph combines the outputs of all six agents into
+one structured report containing an executive summary, functional and
+non-functional requirements, user stories, acceptance criteria, risks,
+ambiguous requirements, and suggestions for improvement. Each completed
+run is stored in SQLite so it can be revisited from the frontend's history
+view.
+
+\vspace{44pt}
+\section{Frontend}
+\post
+The React and Tailwind frontend provides a drag-and-drop upload form, a
+pipeline step indicator, a history sidebar, and a results view with summary
+counters, labelled Given/When/Then blocks, ambiguity and risk panels, and
+report export. Figure~4.1 shows the upload interface.
+
+\vspace{44pt}
+\section{API Endpoints}
+\post
+The backend exposes the following endpoints for the frontend and manual
+testing:
+
+\vspace{27.4pt}
+\begin{table}[H]
+\centering
+\caption{Backend API Endpoints}
+\label{tab:api}
+\begin{tabularx}{\textwidth}{|p{3.2cm}|X|}
+\hline
+\textbf{Endpoint} & \textbf{Purpose} \\
+\hline
+\texttt{GET /health} & Basic health check used to confirm the backend is running. \\
+\hline
+\texttt{POST /upload} & Accepts a PDF, DOCX or TXT file (max 5~MB) into \texttt{uploads/}. \\
+\hline
+\texttt{POST /analyze/step1} & Runs parsing, analysis and classification only. \\
+\hline
+\texttt{POST /analyze} & Runs the full pipeline and saves the report in SQLite. \\
+\hline
+\texttt{GET /runs} & Returns the saved run history. \\
+\hline
+\texttt{GET /runs/\{run\_id\}} & Returns one stored analysis result by ID (404 if missing). \\
+\hline
+\end{tabularx}
+\end{table}
+\end{document}
